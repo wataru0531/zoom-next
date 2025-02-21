@@ -1,3 +1,9 @@
+
+// ⭐️トースト(通知)を管理するためのカスタムトーストシステムを実装
+
+// Toaster.tsx → 画面にトーストを表示するコンポーネント
+// use-toast.tsx → トーストの状態を管理し、表示・更新・削除するロジック
+
 "use client";
 
 import {
@@ -10,12 +16,15 @@ import {
 } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 
+
 export function Toaster() {
   const { toasts } = useToast();
 
   return (
     <ToastProvider>
       {toasts.map(function ({ id, title, description, action, ...props }) {
+        // console.log(id);
+        
         return (
           <Toast
             key={id}
@@ -28,7 +37,7 @@ export function Toaster() {
                 <ToastDescription>{description}</ToastDescription>
               )}
             </div>
-            {action}
+            { action }
             <ToastClose />
           </Toast>
         );

@@ -1,3 +1,6 @@
+
+// 4つのカラム
+
 /* eslint-disable camelcase */
 'use client';
 
@@ -14,35 +17,47 @@ import ReactDatePicker from 'react-datepicker';
 import { useToast } from './ui/use-toast';
 import { Input } from './ui/input';
 
+// 初期値
 const initialValues = {
   dateTime: new Date(),
   description: '',
   link: '',
 };
 
+// 
 const MeetingTypeList = () => {
   const router = useRouter();
-  const [meetingState, setMeetingState] = useState<
+  const [ meetingState, setMeetingState ] = useState<
     'isScheduleMeeting' | 'isJoiningMeeting' | 'isInstantMeeting' | undefined
-  >(undefined);
+  >(undefined); // ミーティングの状態
+
   const [values, setValues] = useState(initialValues);
   const [callDetail, setCallDetail] = useState<Call>();
-  const client = useStreamVideoClient();
-  const { user } = useUser();
+
+  const client = useStreamVideoClient(); //
+  // console.log(client); // treamVideoClient {logLevel: 'warn', eventHandlersToUnregister: Array(3), disconnectUser: ƒ, on: ƒ, off: ƒ, …}
+  const { user } = useUser(); // ログインしているユーザー
+  // console.log(user); // ew {id: 'user_2tIZgdtDTcSweSYO9tNUBcUMrAN', pathRoot: '/me', externalId: null, username: null, emailAddresses: Array(1), …}
   const { toast } = useToast();
 
   const createMeeting = async () => {
     if (!client || !user) return;
+    
     try {
       if (!values.dateTime) {
         toast({ title: 'Please select a date and time' });
         return;
       }
+
       const id = crypto.randomUUID();
+      // console.log(id); // fee6dfc5-0e43-4f21-a36d-3ca2416b0104
       const call = client.call('default', id);
       if (!call) throw new Error('Failed to create meeting');
+
+      // スタート時間
       const startsAt =
         values.dateTime.toISOString() || new Date(Date.now()).toISOString();
+
       const description = values.description || 'Instant Meeting';
       await call.getOrCreate({
         data: {
@@ -52,10 +67,15 @@ const MeetingTypeList = () => {
           },
         },
       });
+
+      // 
       setCallDetail(call);
+
       if (!values.description) {
+        // ミーティングページへ
         router.push(`/meeting/${call.id}`);
       }
+
       toast({
         title: 'Meeting Created',
       });
@@ -67,7 +87,9 @@ const MeetingTypeList = () => {
 
   if (!client || !user) return <Loader />;
 
+  // NEXT_PUBLIC_BASE_URL →　定義がない?
   const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetail?.id}`;
+  // console.log(meetingLink); // undefined/meeting/undefined
 
   return (
     <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">

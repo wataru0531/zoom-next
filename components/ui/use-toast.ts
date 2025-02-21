@@ -1,4 +1,8 @@
+
+// トーストの管理（追加・更新・削除）を行うロジック
+
 "use client"
+
 
 // Inspired by react-hot-toast library
 import * as React from "react"
@@ -74,6 +78,7 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout)
 }
 
+// トーストの状態を管理
 export const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
@@ -142,6 +147,7 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">
 
+//　トーストを追加する処理
 function toast({ ...props }: Toast) {
   const id = genId()
 
@@ -171,18 +177,21 @@ function toast({ ...props }: Toast) {
   }
 }
 
+
+// トーストの状態を管理するカスタムフック
 function useToast() {
-  const [state, setState] = React.useState<State>(memoryState)
+  const [ state, setState ] = React.useState<State>(memoryState)
 
   React.useEffect(() => {
-    listeners.push(setState)
+    listeners.push(setState);
+
     return () => {
       const index = listeners.indexOf(setState)
       if (index > -1) {
         listeners.splice(index, 1)
       }
     }
-  }, [state])
+  }, [ state ])
 
   return {
     ...state,

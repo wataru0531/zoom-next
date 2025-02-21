@@ -1,3 +1,6 @@
+
+// Homeのカード
+
 'use client';
 
 import Image from 'next/image';
@@ -12,6 +15,7 @@ interface HomeCardProps {
   handleClick?: () => void;
 }
 
+// 元のオレンジ以外のカードはclassを上書きして色を変更
 const HomeCard = ({ className, img, title, description, handleClick }: HomeCardProps) => {
   return (
     <section
