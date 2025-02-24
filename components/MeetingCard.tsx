@@ -1,3 +1,6 @@
+
+// upcomingページのカード
+
 "use client";
 
 import Image from "next/image";
@@ -13,15 +16,16 @@ interface MeetingCardProps {
   icon: string;
   isPreviousMeeting?: boolean;
   buttonIcon1?: string;
-  buttonText?: string;
   handleClick: () => void;
   link: string;
+  buttonText?: string;
 }
 
+
 const MeetingCard = ({
-  icon,
   title,
   date,
+  icon,
   isPreviousMeeting,
   buttonIcon1,
   handleClick,
@@ -41,6 +45,7 @@ const MeetingCard = ({
           </div>
         </div>
       </article>
+
       <article className={cn("flex justify-center relative", {})}>
         <div className="relative flex w-full max-sm:hidden">
           {avatarImages.map((img, index) => (
@@ -58,6 +63,7 @@ const MeetingCard = ({
             +5
           </div>
         </div>
+
         {!isPreviousMeeting && (
           <div className="flex gap-2">
             <Button onClick={handleClick} className="rounded bg-blue-1 px-6">

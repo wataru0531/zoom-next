@@ -1,3 +1,6 @@
+
+// 
+
 'use client';
 
 import { Call, CallRecording } from '@stream-io/video-react-sdk';
@@ -8,12 +11,20 @@ import MeetingCard from './MeetingCard';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+
+// ページによってupcommingページか他のページかなどで出し分ける
 const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
   const router = useRouter();
-  const { endedCalls, upcomingCalls, callRecordings, isLoading } =
-    useGetCalls();
-  const [recordings, setRecordings] = useState<CallRecording[]>([]);
 
+  // 現在のユーザーに関連するビデオ通話に関するデータを取得
+  // endedCalls →　すでに終了したビデオ通話
+  // upcomingCalls → 今後のビデオ通話
+  // callRecordings → calls。@stream.ioのデータベースから取得したオブジェクト
+  // isLoading → クライアントからビデオに関するデータの取得に関するローディング状態
+  const { endedCalls, upcomingCalls, callRecordings, isLoading } = useGetCalls();
+  const [ recordings, setRecordings ] = useState<CallRecording[]>([]);
+  
+  // typeに応じたビデオ通話を取得
   const getCalls = () => {
     switch (type) {
       case 'ended':
@@ -22,11 +33,13 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
         return recordings;
       case 'upcoming':
         return upcomingCalls;
+
       default:
         return [];
     }
   };
 
+  // typeに応じた、べでお通話がない時のメッセージを取得
   const getNoCallsMessage = () => {
     switch (type) {
       case 'ended':
@@ -40,19 +53,28 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
     }
   };
 
+  // type === "recordings" のときだけ発火
   useEffect(() => {
+    // callRecordings → 現在ログインしているユーザーに関連するビデオのデータ
     const fetchRecordings = async () => {
       const callData = await Promise.all(
+        // queryRedordings() → その通話に関連する 録画データ(recordings)を取得するメソッド
         callRecordings?.map((meeting) => meeting.queryRecordings()) ?? [],
       );
+      // console.log(callData);
 
       const recordings = callData
         .filter((call) => call.recordings.length > 0)
         .flatMap((call) => call.recordings);
 
+        // ⭐️flatMap() →  配列の各要素に対して関数を適用し、その結果を1つの配列にフラット化するメソッド
+        // →　map() を使うと [[recording1], [recording2, recording3], [recording4]] のようにネストした配列になってしまう
+        //    flatMap() を使うことで [recording1, recording2, recording3, recording4] のようにフラットな配列にできる
+
       setRecordings(recordings);
     };
 
+    // 
     if (type === 'recordings') {
       fetchRecordings();
     }
@@ -60,8 +82,9 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
 
   if (isLoading) return <Loader />;
 
-  const calls = getCalls();
-  const noCallsMessage = getNoCallsMessage();
+  const calls = getCalls(); // 現在のtype(ページ)に応じたデータを取得
+  // console.log(calls); []
+  const noCallsMessage = getNoCallsMessage(); // データがない時のメッセージ
 
   return (
     <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
@@ -101,6 +124,7 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
           />
         ))
       ) : (
+        // 何も登録がない場合の処理
         <h1 className="text-2xl font-bold text-white">{noCallsMessage}</h1>
       )}
     </div>

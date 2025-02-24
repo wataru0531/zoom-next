@@ -3,8 +3,8 @@
 
 import MeetingTypeList from '@/components/MeetingTypeList';
 
-// intl → Intl は ECMAScriptの組み込みオブジェクト で、 
-//        国際化（Internationalization） をサポートするために提供されている
+// intl → Intl は ECMAScriptの組み込みオブジェクトで、 
+//        国際化（Internationalization)をサポートするために提供されている
 
 const Home = () => {
   // ISO 8601(日付と時間の国際規格)で取得
@@ -16,7 +16,8 @@ const Home = () => {
   const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   // console.log(time); // 03:14 PM
 
-  //Intl.DateTimeFormat を使って 現在の日付を "フル表記" にフォーマット
+  // Intl.DateTimeFormat を使って 現在の日付を "フル表記" にフォーマット
+  // console.log(Intl.DateTimeFormat("en-US", { dateStoyle: "full" }))
   const date = (new Intl.DateTimeFormat('en-US', { dateStyle: 'full' })).format(now);
   // console.log(date); // Friday, February 21, 2025
 
@@ -35,7 +36,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* New Meeting, New Meeting, New Meeting, View Recordings の４つのカラム */}
+      {/* 4つのカラム →New Meeting, New Meeting, New Meeting, View Recordings */}
       <MeetingTypeList />
     </section>
   );

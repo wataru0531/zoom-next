@@ -1,3 +1,15 @@
+
+// ⭐️compnents > ui は、shadcnを初期化された際にできるディレクトリ。
+// このuiフォルダに、shadcnからインストールされたuiをを入れていく
+// 自由にカスタマイズも可能
+
+// ⭐️shadcn の特徴
+// ▶️ 外部ライブラリとしてインストールされるのではなく、ソースコードごとプロジェクトに追加される。
+// ▶️ カスタマイズがしやすい（直接 components/ui 内のコードを変更できる）。
+// ▶️ Tailwind CSS に最適化 されており、デフォルトのスタイルを自由に変更可能。
+
+
+
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
