@@ -35,7 +35,7 @@ export default function RootLayout({
       {/* 
         ⭐️ appearance
           → ClerkProvider のプロパティを使用して、
-            Clerk（認証管理ライブラリ）のUIの見た目をカスタマイズする
+            Clerk（認証管理ライブラリ）のUIの見た目をカスタマイズ
       */}
       <ClerkProvider
         appearance={{

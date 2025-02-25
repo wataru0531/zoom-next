@@ -29,6 +29,7 @@ export const sidebarLinks = [
   },
 ];
 
+// previousページで使用
 export const avatarImages = [
   '/images/avatar-1.jpeg',
   '/images/avatar-2.jpeg',

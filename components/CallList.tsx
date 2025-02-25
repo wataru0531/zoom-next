@@ -4,6 +4,7 @@
 'use client';
 
 import { Call, CallRecording } from '@stream-io/video-react-sdk';
+// console.log(Call); // class Call { registerEffects() { ... }
 
 import Loader from './Loader';
 import { useGetCalls } from '@/hooks/useGetCalls';
@@ -13,6 +14,8 @@ import { useRouter } from 'next/navigation';
 
 
 // ページによってupcommingページか他のページかなどで出し分ける
+// upcomming →　upcomingページ
+// ended → previousページ
 const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
   const router = useRouter();
 
@@ -55,7 +58,7 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
 
   // type === "recordings" のときだけ発火
   useEffect(() => {
-    // callRecordings → 現在ログインしているユーザーに関連するビデオのデータ
+    // callRecordings → callsのこと。現在ログインしているユーザーに関連するビデオのデータ
     const fetchRecordings = async () => {
       const callData = await Promise.all(
         // queryRedordings() → その通話に関連する 録画データ(recordings)を取得するメソッド
@@ -83,46 +86,64 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
   if (isLoading) return <Loader />;
 
   const calls = getCalls(); // 現在のtype(ページ)に応じたデータを取得
-  // console.log(calls); []
+  // console.log(calls);
   const noCallsMessage = getNoCallsMessage(); // データがない時のメッセージ
 
   return (
     <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
       {calls && calls.length > 0 ? (
-        calls.map((meeting: Call | CallRecording) => (
-          <MeetingCard
-            key={(meeting as Call).id}
-            icon={
-              type === 'ended'
-                ? '/icons/previous.svg'
-                : type === 'upcoming'
-                  ? '/icons/upcoming.svg'
-                  : '/icons/recordings.svg'
-            }
-            title={
-              (meeting as Call).state?.custom?.description ||
-              (meeting as CallRecording).filename?.substring(0, 20) ||
-              'No Description'
-            }
-            date={
-              (meeting as Call).state?.startsAt?.toLocaleString() ||
-              (meeting as CallRecording).start_time?.toLocaleString()
-            }
-            isPreviousMeeting={type === 'ended'}
-            link={
-              type === 'recordings'
-                ? (meeting as CallRecording).url
-                : `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${(meeting as Call).id}`
-            }
-            buttonIcon1={type === 'recordings' ? '/icons/play.svg' : undefined}
-            buttonText={type === 'recordings' ? 'Play' : 'Start'}
-            handleClick={
-              type === 'recordings'
-                ? () => router.push(`${(meeting as CallRecording).url}`)
-                : () => router.push(`/meeting/${(meeting as Call).id}`)
-            }
-          />
-        ))
+        calls.map((meeting: Call | CallRecording) => {
+          // console.log(meeting); // Call {state: CallState, dynascaleManager: DynascaleManager, permissionsContext: PermissionsContext, dispatcher: Dispatcher, trackSubscriptionsSubject: BehaviorSubject, …}
+
+          return (
+            // ⭐️型アサーション
+            // → TypeScriptの型推論だけでは適切な型が決まらないときに、「この値はこの型である」と
+            //   開発者が明示的に指定するためのもの
+            //   TypeScriptは型安全な言語ですが、実行時に取得されるデータの型を完全には予測できないことがあるため、
+            //   型アサーションを使うことで型を確定させる
+            // ここでは、
+            // calls は Call[] または CallRecording[] のどちらかになるため、map() 内の meeting は Call | CallRecording 型になる
+            // TypeScriptは meeting が Call なのか CallRecording なのか分からないため、meeting.id を取得しようとするとエラーになる
+            // Call には id プロパティがありますが、CallRecording には id がない、
+            // TypeScriptは meeting.id が常に存在するとは判断できず、
+            // これは「meeting は Call 型である」と TypeScript に伝えることで、コンパイルエラーを防ぐことが可能となる
+
+            <MeetingCard
+              // key={(meeting as Call).id}
+              // meetingがCallかCallRecordingの時とで条件分岐させる
+              key={'id' in meeting ? meeting.id : meeting.filename}
+              icon={
+                type === 'ended'
+                  ? '/icons/previous.svg'
+                  : type === 'upcoming'
+                    ? '/icons/upcoming.svg'
+                    : '/icons/recordings.svg'
+              }
+              title={
+                (meeting as Call).state?.custom?.description ||
+                (meeting as CallRecording).filename?.substring(0, 20) ||
+                'No Description'
+              }
+              date={
+                (meeting as Call).state?.startsAt?.toLocaleString() ||
+                (meeting as CallRecording).start_time?.toLocaleString()
+              }
+              isPreviousMeeting={type === 'ended'}
+              link={
+                type === 'recordings'
+                  ? (meeting as CallRecording).url
+                  : `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${(meeting as Call).id}`
+              }
+              buttonIcon1={type === 'recordings' ? '/icons/play.svg' : undefined}
+              buttonText={type === 'recordings' ? 'Play' : 'Start'}
+              handleClick={
+                type === 'recordings'
+                  ? () => router.push(`${(meeting as CallRecording).url}`)
+                  : () => router.push(`/meeting/${(meeting as Call).id}`)
+              }
+            />
+          )
+        })
       ) : (
         // 何も登録がない場合の処理
         <h1 className="text-2xl font-bold text-white">{noCallsMessage}</h1>

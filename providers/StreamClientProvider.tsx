@@ -1,15 +1,20 @@
 
 // ⭐️Stream.io
-// → リアルタイムなチャットやフィード機能をアプリケーションに組み込む
+//   → リアルタイムなチャットやフィード機能をアプリケーションに組み込む
+//   ✅ Zoom のようなビデオ通話機能が実装可能。
+//   → 実際のzoomなどではなくて、stream.io独自のビデオ通話機能
+//   ✅ リアルタイムストリーミングで高速な映像配信が可能 🚀
+//   ✅ ユーザー情報を管理し、個別のビデオセッションを提供 👤
+//   ✅ 予約や録画機能と組み合わせることもできる
 
-// ここでは、
-// ✅ Zoom のようなビデオ通話機能が実装可能 🎥
-// ✅ リアルタイムストリーミングで高速な映像配信が可能 🚀
-// ✅ ユーザー情報を管理し、個別のビデオセッションを提供 👤
-// ✅ 予約や録画機能と組み合わせることもできる
+// ⭐️<StreamVideo>コンポーネントを使ってアプリ全体（または一部）をラップすることで、
+// Stream.io のビデオ機能がその子コンポーネント内で利用可能 となる
 
-// 👉 StreamVideoProvider で囲んだコンポーネントは、すべてこの機能を使えるようになる！
+// ⭐️なぜラップする必要があるのか？
+// → StreamVideo は コンテキストプロバイダー の役割を果たしており、その内部で Stream.io のビデオ機能を管理 しています。
+//   このプロバイダーの中で、Stream.io の APIキーやユーザー情報、トークン管理 などが適切に設定されます。
 
+//   このラップをしないと、ビデオ通話に必要なデータ（ユーザー情報やAPIキーなど）が渡されず、Stream.io の機能を正しく使えませ
 
 
 'use client';
@@ -24,10 +29,11 @@ import Loader from '@/components/Loader';
 
 const API_KEY = process.env.NEXT_PUBLIC_STREAM_API_KEY;
 
-// 
+
+// プロバイダー
 const StreamVideoProvider = ({ children }: { children: ReactNode }) => {
   const [videoClient, setVideoClient] = useState<StreamVideoClient>();
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded } = useUser(); // Clerkで現在ログインしているユーザーのデータを取得
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -50,7 +56,11 @@ const StreamVideoProvider = ({ children }: { children: ReactNode }) => {
 
   if (!videoClient) return <Loader />;
 
-  return <StreamVideo client={videoClient}>{children}</StreamVideo>;
+  return (
+    <StreamVideo client={videoClient}>
+      {children}
+    </StreamVideo>
+  );
 };
 
 export default StreamVideoProvider;

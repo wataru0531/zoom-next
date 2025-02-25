@@ -62,12 +62,12 @@ export const useGetCalls = () => {
     // !!endedAt →　endedAtを確実にtrue/falseに変換する
     // → endeAtがnullやundefinedの場合は、undefined → true →　falseになる
     //   endedAtが"2025-02-10T10:00:00Z"の場合は、"2025-02-10T10:00:00Z" →　false →　true
-    return (startsAt && new Date(startsAt) < now) || !!endedAt
+    return (startsAt && new Date(startsAt) < now) || !!endedAt;
   })
 
   // 今後のビデオ通話を取得
   const upcomingCalls = calls?.filter(({ state: { startsAt } }: Call) => {
-    return startsAt && new Date(startsAt) > now
+    return startsAt && new Date(startsAt) > now;
   })
 
   // callRecordings → ここで新しく定義している。callsを含んでいる

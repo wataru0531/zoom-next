@@ -1,3 +1,7 @@
+
+
+// ローダー
+
 import Image from 'next/image';
 
 const Loader = () => {
