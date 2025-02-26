@@ -12,7 +12,7 @@ export const useGetCallById = (id: string | string[]) => {
   const [call, setCall] = useState<Call>(); // ビデオ通話のオブジェクト
   const [isCallLoading, setIsCallLoading] = useState(true);
 
-  // クライアント生成 →　stream.ioとデータの通信を行う
+  // クライアント生成 → stream.ioとデータの通信を行う
   const client = useStreamVideoClient();
 
   useEffect(() => {

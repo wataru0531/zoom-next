@@ -17,6 +17,7 @@ interface TableProps {
   description: string
 }
 
+
 // 
 const Table = ({ title, description }: TableProps) => {
   return (
@@ -34,6 +35,7 @@ const Table = ({ title, description }: TableProps) => {
 
 // 
 const PersonalRoom = () => {
+
   const router = useRouter();
   const { user } = useUser(); // 現在ログインしているユーザー
   const client = useStreamVideoClient(); // ブラウザ側のクライアント生成
@@ -45,19 +47,28 @@ const PersonalRoom = () => {
   const { call } = useGetCallById(meetingId!);
   // console.log(call); // Call {state: CallState, dynascaleManager: DynascaleManager, permissionsContext: PermissionsContext, dispatcher: Dispatcher, trackSubscriptionsSubject: BehaviorSubject, …}
 
+  // 新しいビデを通話を作成する処理
   const startRoom = async () => {
     if (!client || !user) return;
 
+    // 新しいビデオのインスタンスを生成
+    // default → 通話のタイプの動画
     const newCall = client.call("default", meetingId!);
 
+    // 関連する動画がない時(まだ、このidでビデオ通話が作成されていない)
+    // ユーザーのidを使ってユーザー専用のビデオ通話を作成
     if (!call) {
+      // getOrCreate() → ビデオ通話作成 もしくは、既存のそれを取得
       await newCall.getOrCreate({
         data: {
+          // 通話の開始時間を現在の時刻に設定
           starts_at: new Date().toISOString(),
         },
       });
     }
 
+    // personal=trueの意味
+    // → クエリパラメータで、このミーティングは個人のものという意味になる
     router.push(`/meeting/${meetingId}?personal=true`);
   };
 
@@ -82,6 +93,7 @@ const PersonalRoom = () => {
         <Button
           className="bg-dark-3"
           onClick={() => {
+            // ミーティングのリンクをクリップボードにコピーする
             navigator.clipboard.writeText(meetingLink);
             toast({
               title: "Link Copied",
